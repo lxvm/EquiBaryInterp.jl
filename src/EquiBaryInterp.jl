@@ -1,9 +1,8 @@
 """
-    EquiBaryInterp
-
-A module to perform local barycentric Lagrange interpolation of data on
-equispaced grids as in the paper by Berrut and Trefethen (2004) SIAM review
-https://doi.org/10.1137/S0036144502417715
+A package for performing local barycentric Lagrange interpolation of data on
+equispaced grids using the barycentric interpolation formula in the [Berrut and
+Trefethen (2004) SIAM review](https://doi.org/10.1137/S0036144502417715).
+The main routine is [`LocalEquiBaryInterp`](@ref).
 """
 module EquiBaryInterp
 
@@ -57,6 +56,7 @@ end
     BaryPoly(x, y, w)
 
 Constructs a barycentric Lagrange polynomial from the data `y` sampled on `x`.
+(See [`barycentric_weights`](@ref).)
 """
 struct BaryPoly{Tx,Ty,Tw} <: Function
     x::Vector{Tx}
@@ -78,12 +78,17 @@ end
 
 """
     LocalEquiBaryInterp(x::AbstractVector, y::AbstractVector, [degree=8])
-    LocalEquiBaryInterp(x::Vector, y::Vector, w::Vector, h)
+    LocalEquiBaryInterp(x::Vector, y::Vector, w::Vector, h⁻¹)
 
 Construct a local barycentric Lagrange interpolant that forms a degree `degree`
 local polynomial approximation of the data `y` on the equispace grid `x`, which
-must be identical to a range with step size `h`. `w` are the equispace
-interpolation weights.
+must be identical to a sorted range with step size `h`. `w` are the equispace
+interpolation weights (see [`equi_bary_weights`](@ref)). The restrictions on `x`
+are that it be a real vector with entries identical to a range and that it be
+sorted. `y` can contain any type supporting addition and scalar multiplication.
+
+Returns an interpolant `f` that can be evaluated at points within `extrema(x)`
+using a function syntax `f(x)`.
 """
 struct LocalEquiBaryInterp{Tx,Ty,Tw,Th} <: Function
     x::Vector{Tx}
@@ -91,7 +96,7 @@ struct LocalEquiBaryInterp{Tx,Ty,Tw,Th} <: Function
     w::Vector{Tw}
     h⁻¹::Th
 end
-function LocalEquiBaryInterp(x::AbstractVector{Tx}, y::AbstractVector{Ty}, degree::Integer=8) where {Tx,Ty}
+function LocalEquiBaryInterp(x::AbstractVector{Tx}, y::AbstractVector{Ty}, degree::Integer=8) where {Tx<:Real,Ty}
     if (n = length(x)) < degree+1
         throw(ArgumentError("Insufficient nodes to construct interpolant of requested degree"))
     else
@@ -121,17 +126,19 @@ end
 
 
 """
-    to_range(x::AbstractVector)
+    to_sorted_range(x::AbstractVector)
 
 Assert that `x` is numerically identical to an equispace range, and return an
 equivalent range object.
 """
-to_range(x::AbstractRange) = x
+function to_sorted_range(x::AbstractRange)
+    issorted(x) || throw(ArgumentError("input data is not sorted. Try reversing it"))
+    x
+end
 function to_sorted_range(x::AbstractVector)
     y = range(first(x), last(x), length=length(x))
     x == y || throw(InexactError(:to_sorted_range, typeof(y), x))
-    issorted(y) || throw(ArgumentError("input data is not sorted. Try reversing it"))
-    y
+    to_sorted_range(y)
 end
 
 end
