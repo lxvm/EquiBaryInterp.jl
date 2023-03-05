@@ -96,7 +96,7 @@ struct LocalEquiBaryInterp{Tx,Ty,Tw,Th} <: Function
     w::Vector{Tw}
     h⁻¹::Th
 end
-function LocalEquiBaryInterp(x::AbstractVector{Tx}, y::AbstractVector{Ty}, degree::Integer=8) where {Tx<:Real,Ty}
+function LocalEquiBaryInterp(x::AbstractVector{Tx}, y::AbstractVector{Ty}; degree::Integer=8) where {Tx<:Real,Ty}
     if (n = length(x)) < degree+1
         throw(ArgumentError("Insufficient nodes to construct interpolant of requested degree"))
     else
