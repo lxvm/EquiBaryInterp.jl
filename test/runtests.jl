@@ -37,14 +37,14 @@ using EquiBaryInterp: BaryPoly, LocalEquiBaryInterp, barycentric_weights, equi_b
             for f in (sin∘exp, cis∘inv∘exp) # both real and complex functions
                 θ = range(0, 1, length=nsamp) # equispace nodes
                 yθ = f.(θ) # data
-                bθ = LocalEquiBaryInterp(θ, yθ, degree)
+                bθ = LocalEquiBaryInterp(θ, yθ, degree=degree)
                 @test bθ(0.1111) ≈ f(0.1111) atol=1e-5
 
                 @test_throws ArgumentError bθ(2.0) # out of sample
 
                 c = reverse(cospi.(θ)) # Chebyshev nodes / non-equispace data
                 yc =  f.(c) # data
-                @test_throws InexactError LocalEquiBaryInterp(c, yc, degree)
+                @test_throws InexactError LocalEquiBaryInterp(c, yc, degree=degree)
             end
         end
     end
