@@ -2,3 +2,6 @@ name = "EquiBaryInterp"
 uuid = "c5458111-f826-47c0-abe9-f36aa00852ec"
 authors = ["lxvm <lorenzo@vanmunoz.com>"]
 version = "0.1.0"
+
+[compat]
+julia = "1.6"
