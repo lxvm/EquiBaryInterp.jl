@@ -1,6 +1,11 @@
 using Test
 using EquiBaryInterp: BaryPoly, LocalEquiBaryInterp, barycentric_weights, equi_bary_weights
 
+import EquiBaryInterp
+using Aqua
+
+Aqua.test_all(EquiBaryInterp, project_toml_formatting=false)
+
 @testset "EquiBaryInterp" begin
     @testset "BaryPoly" for degree=(8, 10, 20) # larger degrees begin to overflow
         # check that the numerical weights match the analytic formula
@@ -19,7 +24,7 @@ using EquiBaryInterp: BaryPoly, LocalEquiBaryInterp, barycentric_weights, equi_b
             yc =  f.(c) # data
             bc = BaryPoly(c, yc) #
             @test bc(0.1111) ≈ f(0.1111) atol=1e-3
-            
+
             # out of sample
             @test_throws ArgumentError bc(2.0)
         end
