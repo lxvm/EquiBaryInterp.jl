@@ -4,7 +4,7 @@ using EquiBaryInterp: BaryPoly, LocalEquiBaryInterp, barycentric_weights, equi_b
 import EquiBaryInterp
 using Aqua
 
-Aqua.test_all(EquiBaryInterp, project_toml_formatting=false)
+Aqua.test_all(EquiBaryInterp)
 
 @testset "EquiBaryInterp" begin
     @testset "BaryPoly" for degree=(8, 10, 20) # larger degrees begin to overflow
